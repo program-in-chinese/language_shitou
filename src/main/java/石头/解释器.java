@@ -2,6 +2,8 @@ package 石头;
 
 import java.util.Arrays;
 
+import 石头.语法.方法;
+
 public class 解释器 {
 
   public static void main(String[] 参数) {

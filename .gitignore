@@ -1,5 +1,5 @@
 
-# Created by https://www.gitignore.io/api/java,maven,eclipse
+# Created by https://www.gitignore.io/api/java,maven,eclipse,netbeans
 
 ### Eclipse ###
 
@@ -98,4 +98,12 @@ buildNumber.properties
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
 !/.mvn/wrapper/maven-wrapper.jar
 
-# End of https://www.gitignore.io/api/java,maven,eclipse
+### NetBeans ###
+石头编程环境/nbproject/private/
+石头编程环境/build/
+石头编程环境/nbbuild/
+石头编程环境/dist/
+石头编程环境/nbdist/
+石头编程环境/.nb-gradle/
+
+# End of https://www.gitignore.io/api/java,maven,eclipse,netbeans

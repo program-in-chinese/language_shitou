@@ -34,37 +34,37 @@ public class 石头编程环境 extends Application {
   }
 
   @Override
-  public void start(Stage primaryStage) {
-    GridPane grid = new GridPane();
-    grid.setAlignment(Pos.TOP_CENTER);
-    grid.setHgap(10);
-    grid.setVgap(10);
-    grid.setPadding(new Insets(25, 25, 25, 25));
-    grid.setBackground(Background.EMPTY);
+  public void start(Stage 顶层容器) {
+    GridPane 网格面板 = new GridPane();
+    网格面板.setAlignment(Pos.TOP_CENTER);
+    网格面板.setHgap(10);
+    网格面板.setVgap(10);
+    网格面板.setPadding(new Insets(25, 25, 25, 25));
+    网格面板.setBackground(Background.EMPTY);
 
-    Scene scene = new Scene(grid, 800, 600);
+    Scene 情景 = new Scene(网格面板, 800, 600);
 
     TextField 用户输入 = new TextField();
     用户输入.setMinWidth(700);
     
     // TODO: 输入检查/提示?
     用户输入.setTooltip(new Tooltip("请说"));
-    grid.add(用户输入, 0, 1, 2, 1);
+    网格面板.add(用户输入, 0, 1, 2, 1);
 
     final List<问答记录> 问答历史 = new ArrayList<>();
 
     用户输入.setOnKeyPressed(new EventHandler<KeyEvent>() {
-      public void handle(KeyEvent ke) {
-        if (ke.getCode().equals(KeyCode.ENTER)) {
+      public void handle(KeyEvent 键盘事件) {
+        if (键盘事件.getCode().equals(KeyCode.ENTER)) {
           final Text 问 = new Text();
-          grid.add(问, 0, 问答历史.size() * 2 + 记录位置);
+          网格面板.add(问, 0, 问答历史.size() * 2 + 记录位置);
           问.setFill(Color.CORNFLOWERBLUE);
           问.setFont(Font.font(字体, 字体大小));
           String 问内容 = 用户输入.getText();
           问.setText(问内容);
 
           final Text 答 = new Text();
-          grid.add(答, 1, 问答历史.size() * 2 + 1 + 记录位置);
+          网格面板.add(答, 1, 问答历史.size() * 2 + 1 + 记录位置);
           答.setFill(Color.CHOCOLATE);
           答.setFont(Font.font(字体, 字体大小));
           String 答内容 = 演示问答.get(问内容);
@@ -77,17 +77,14 @@ public class 石头编程环境 extends Application {
       }
     });
 
-    primaryStage.setTitle("石头演示");
-    primaryStage.setScene(scene);
-    primaryStage.show();
+    顶层容器.setTitle("石头演示");
+    顶层容器.setScene(情景);
+    顶层容器.show();
 
   }
 
-  /**
-   * @param args the command line arguments
-   */
-  public static void main(String[] args) {
-    launch(args);
+  public static void main(String[] 参数) {
+    launch(参数);
   }
 
 }

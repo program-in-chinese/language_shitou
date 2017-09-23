@@ -1,9 +1,9 @@
-package 石头.语法;
+package 石头语言.语法;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import 石头.库.内置库;
+import 石头语言.库.内置库;
 
 public class 方法 {
   public Object 名称;
@@ -16,5 +16,13 @@ public class 方法 {
 
   public Object 运行() {
     return 内置库.方法表.get(名称).apply(参数);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    // TODO Auto-generated method stub
+    return obj instanceof 方法
+        && ((方法)obj).名称.equals(名称)
+        && ((方法)obj).参数.equals(参数);
   }
 }

@@ -18,6 +18,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import 石头语言.分析器.分析器;
+import 石头语言.语法.方法;
 
 public class 石头编程环境 extends Application {
 
@@ -67,7 +69,9 @@ public class 石头编程环境 extends Application {
           网格面板.add(答, 1, 问答历史.size() * 2 + 1 + 记录位置);
           答.setFill(Color.CHOCOLATE);
           答.setFont(Font.font(字体, 字体大小));
-          String 答内容 = 演示问答.get(问内容);
+          
+          方法 识别方法 = 分析器.分析(问内容);
+          String 答内容 = 识别方法 != null ? 识别方法.运行().toString() : 演示问答.get(问内容);
           答内容 = 答内容 == null ? "听不懂" : 答内容;
           答.setText(答内容);
           问答历史.add(new 问答记录(问内容, 答内容));

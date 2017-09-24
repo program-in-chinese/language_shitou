@@ -3,7 +3,6 @@ package 石头语言.语法;
 import java.util.ArrayList;
 import java.util.List;
 
-import 石头语言.库.内置库;
 
 public class 方法 {
   public Object 名称;

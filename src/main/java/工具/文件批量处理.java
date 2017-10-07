@@ -44,7 +44,7 @@ public class 文件批量处理 {
     }
   }
 
-  public static void main(String[] 参数) {
+  public static void main(String[] 参数) throws InterruptedException {
     /*if (参数.length != 2) {
       System.out.println("参数必须两个: "
               + "1) 文件匹配表达式, 如c:\\test*.txt; "
@@ -61,14 +61,8 @@ public class 文件批量处理 {
     try {
       List<File> 匹配文件 = 获取匹配文件(文件匹配表达式);
       for (File 文件 : 匹配文件) {
-        System.out.println(文件.getAbsolutePath());
+        运行命令(文件.getAbsolutePath());
       }
-    } catch (IOException ex) {
-      Logger.getLogger(文件批量处理.class.getName()).log(Level.SEVERE, null, ex);
-    }
-
-    try {
-      运行命令();
     } catch (IOException ex) {
       Logger.getLogger(文件批量处理.class.getName()).log(Level.SEVERE, null, ex);
     } catch (InterruptedException ex) {
@@ -80,7 +74,7 @@ public class 文件批量处理 {
     ArrayList<File> 匹配文件 = new ArrayList<>();
     Path startDir = Paths.get("/Users/xuanwu/work/bak/");
     FileSystem fs = FileSystems.getDefault();
-    final PathMatcher matcher = fs.getPathMatcher("glob:*0820*");
+    final PathMatcher matcher = fs.getPathMatcher("glob:*.html");
 
     FileVisitor<Path> matcherVisitor = new SimpleFileVisitor<Path>() {
       @Override
@@ -102,14 +96,14 @@ public class 文件批量处理 {
     return 匹配文件;
   }
 
-  private static void 运行命令() throws IOException, InterruptedException {
+  private static void 运行命令(String 文件名) throws IOException, InterruptedException {
     boolean isWindows = System.getProperty("os.name")
             .toLowerCase().startsWith("windows");
     ProcessBuilder builder = new ProcessBuilder();
     if (isWindows) {
       builder.command("cmd.exe", "/c", "dir");
     } else {
-      builder.command("sh", "-c", "ls");
+      builder.command("sh", "-c", "ls -l " + 文件名);
     }
     builder.directory(new File(System.getProperty("user.home")));
     Process process = builder.start();

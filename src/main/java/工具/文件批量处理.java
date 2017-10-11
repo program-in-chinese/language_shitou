@@ -17,6 +17,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -26,7 +27,8 @@ public class 文件批量处理 {
 
   private static String 文件匹配表达式 = "\\*.html";
   private static String shell命令模板 = "";
-
+  private static ExecutorService 单线程执行器 = Executors.newSingleThreadExecutor();
+  
   private static class StreamGobbler implements Runnable {
 
     private InputStream inputStream;
@@ -63,6 +65,7 @@ public class 文件批量处理 {
       for (File 文件 : 匹配文件) {
         运行命令(文件.getAbsolutePath());
       }
+      单线程执行器.shutdown();
     } catch (IOException ex) {
       Logger.getLogger(文件批量处理.class.getName()).log(Level.SEVERE, null, ex);
     } catch (InterruptedException ex) {
@@ -103,13 +106,13 @@ public class 文件批量处理 {
     if (isWindows) {
       builder.command("cmd.exe", "/c", "dir");
     } else {
-      builder.command("sh", "-c", "ls -l " + 文件名);
+      builder.command("ls", "-l", 文件名);
     }
     builder.directory(new File(System.getProperty("user.home")));
     Process process = builder.start();
     StreamGobbler streamGobbler
             = new StreamGobbler(process.getInputStream(), System.out::println);
-    Executors.newSingleThreadExecutor().submit(streamGobbler);
+    单线程执行器.submit(streamGobbler);
     int exitCode = process.waitFor();
     assert exitCode == 0;
   }

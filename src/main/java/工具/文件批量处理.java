@@ -25,8 +25,9 @@ import java.util.logging.Logger;
 
 public class 文件批量处理 {
 
-  private static String 文件匹配表达式 = "\\*.html";
-  private static String shell命令模板 = "";
+  //private static String 文件匹配表达式 = "\\*.html";
+  // private static String shell命令模板 = "";
+  private static String 占位符 = "文件";
   private static ExecutorService 单线程执行器 = Executors.newSingleThreadExecutor();
   
   private static class StreamGobbler implements Runnable {
@@ -47,28 +48,16 @@ public class 文件批量处理 {
   }
 
   public static void main(String[] 参数) throws InterruptedException {
-    /*if (参数.length != 2) {
-      System.out.println("参数必须两个: "
-              + "1) 文件匹配表达式, 如c:\\test*.txt; "
-              + "2) 对文件处理的shell命令, 带双引号, 以'wenjian'指代文件, 如\"cp wenjian /tmp\"");
-      for (String 某参数 : 参数) {
-        System.out.println(某参数);
-      }
-      return;
-    }
-
-    文件匹配表达式 = 参数[0];
-    shell命令模板 = 参数[1];*/
+    String 文件匹配表达式 = "*.html"; //参数[0];
+    String shell命令模板 = "ls -l 文件";//参数[1];
 
     try {
       List<File> 匹配文件 = 获取匹配文件(文件匹配表达式);
       for (File 文件 : 匹配文件) {
-        运行命令(文件.getAbsolutePath());
+        运行命令(shell命令模板, 文件.getAbsolutePath());
       }
       单线程执行器.shutdown();
     } catch (IOException ex) {
-      Logger.getLogger(文件批量处理.class.getName()).log(Level.SEVERE, null, ex);
-    } catch (InterruptedException ex) {
       Logger.getLogger(文件批量处理.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
@@ -99,14 +88,23 @@ public class 文件批量处理 {
     return 匹配文件;
   }
 
-  private static void 运行命令(String 文件名) throws IOException, InterruptedException {
+  private static void 运行命令(String shell命令模板, String 文件路径) throws IOException, InterruptedException {
+    String[] 命令行 = shell命令模板.split(" ");
+    List<String> 命令行段 = new ArrayList<>();
+    for(String 分段 : 命令行) {
+      命令行段.add(分段.equals(占位符) ? 文件路径 : 分段);
+    }
+    运行命令(命令行段);
+  }
+
+  private static void 运行命令(List<String> 命令行段) throws IOException, InterruptedException {
     boolean isWindows = System.getProperty("os.name")
             .toLowerCase().startsWith("windows");
     ProcessBuilder builder = new ProcessBuilder();
     if (isWindows) {
       builder.command("cmd.exe", "/c", "dir");
     } else {
-      builder.command("ls", "-l", 文件名);
+      builder.command(命令行段);
     }
     builder.directory(new File(System.getProperty("user.home")));
     Process process = builder.start();

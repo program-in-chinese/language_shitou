@@ -27,11 +27,11 @@ import java.util.logging.Logger;
 public class 文件批量处理 {
 
   private String 文件匹配表达式 = "";
-  private String shell命令模板 = "";//"ls -l 文件";//参数[1];
-  
+  private String shell命令模板 = "";
+
   private static String 占位符 = "文件";
   private static ExecutorService 单线程执行器 = Executors.newSingleThreadExecutor();
-  
+
   private static class StreamGobbler implements Runnable {
 
     private InputStream inputStream;
@@ -44,8 +44,7 @@ public class 文件批量处理 {
 
     @Override
     public void run() {
-      new BufferedReader(new InputStreamReader(inputStream)).lines()
-              .forEach(consumer);
+      new BufferedReader(new InputStreamReader(inputStream)).lines().forEach(consumer);
     }
   }
 
@@ -55,10 +54,10 @@ public class 文件批量处理 {
       if (!命令模板.contains(占位符)) {
         运行命令(命令模板);
       } else {
-      List<File> 匹配文件 = 获取匹配文件(取文件匹配表达式());
-      for (File 文件 : 匹配文件) {
-        运行命令(命令模板, 文件.getAbsolutePath());
-      }
+        List<File> 匹配文件 = 获取匹配文件(取文件匹配表达式());
+        for (File 文件 : 匹配文件) {
+          运行命令(命令模板, 文件.getAbsolutePath());
+        }
       }
       单线程执行器.shutdown();
     } catch (IOException ex) {
@@ -67,10 +66,13 @@ public class 文件批量处理 {
   }
 
   private static List<File> 获取匹配文件(String 文件匹配表达式) throws IOException {
+    // TODO: 支持无*, 多*, 等等. 考虑调用ls/dir的返回值
+    int 匹配符位置 = 文件匹配表达式.indexOf("*");
+    String 目录路径 = 文件匹配表达式.substring(0, 匹配符位置 - 1);
     ArrayList<File> 匹配文件 = new ArrayList<>();
-    Path startDir = Paths.get("/Users/xuanwu/work/bak/");
+    Path startDir = Paths.get(目录路径); // "/Users/xuanwu/work/bak/"
     FileSystem fs = FileSystems.getDefault();
-    final PathMatcher matcher = fs.getPathMatcher("glob:*.html");
+    final PathMatcher matcher = fs.getPathMatcher("glob:" + 文件匹配表达式.substring(匹配符位置));
 
     FileVisitor<Path> matcherVisitor = new SimpleFileVisitor<Path>() {
       @Override
@@ -99,15 +101,14 @@ public class 文件批量处理 {
   private static void 运行命令(String shell命令模板, String 文件路径) throws IOException, InterruptedException {
     String[] 命令行 = shell命令模板.split(" ");
     List<String> 命令行段 = new ArrayList<>();
-    for(String 分段 : 命令行) {
+    for (String 分段 : 命令行) {
       命令行段.add(分段.equals(占位符) ? 文件路径 : 分段);
     }
     运行命令(命令行段);
   }
 
   private static void 运行命令(List<String> 命令行段) throws IOException, InterruptedException {
-    boolean isWindows = System.getProperty("os.name")
-            .toLowerCase().startsWith("windows");
+    boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
     ProcessBuilder builder = new ProcessBuilder();
     if (isWindows) {
       builder.command("cmd.exe", "/c", "dir");
@@ -116,8 +117,7 @@ public class 文件批量处理 {
     }
     builder.directory(new File(System.getProperty("user.home")));
     Process process = builder.start();
-    StreamGobbler streamGobbler
-            = new StreamGobbler(process.getInputStream(), System.out::println);
+    StreamGobbler streamGobbler = new StreamGobbler(process.getInputStream(), System.out::println);
     单线程执行器.submit(streamGobbler);
     int exitCode = process.waitFor();
     assert exitCode == 0;

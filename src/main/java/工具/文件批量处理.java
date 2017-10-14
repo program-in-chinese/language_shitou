@@ -16,6 +16,7 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -50,9 +51,14 @@ public class 文件批量处理 {
 
   public void 运行() throws InterruptedException {
     try {
+      String 命令模板 = 取Shell命令模板();
+      if (!命令模板.contains(占位符)) {
+        运行命令(命令模板);
+      } else {
       List<File> 匹配文件 = 获取匹配文件(取文件匹配表达式());
       for (File 文件 : 匹配文件) {
-        运行命令(取Shell命令模板(), 文件.getAbsolutePath());
+        运行命令(命令模板, 文件.getAbsolutePath());
+      }
       }
       单线程执行器.shutdown();
     } catch (IOException ex) {
@@ -84,6 +90,10 @@ public class 文件批量处理 {
     };
     Files.walkFileTree(startDir, matcherVisitor);
     return 匹配文件;
+  }
+
+  private static void 运行命令(String shell命令模板) throws IOException, InterruptedException {
+    运行命令(Arrays.asList(shell命令模板.split(" ")));
   }
 
   private static void 运行命令(String shell命令模板, String 文件路径) throws IOException, InterruptedException {

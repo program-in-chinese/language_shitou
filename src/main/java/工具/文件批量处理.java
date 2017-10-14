@@ -25,8 +25,9 @@ import java.util.logging.Logger;
 
 public class 文件批量处理 {
 
-  //private static String 文件匹配表达式 = "\\*.html";
-  // private static String shell命令模板 = "";
+  private String 文件匹配表达式 = "";
+  private String shell命令模板 = "";//"ls -l 文件";//参数[1];
+  
   private static String 占位符 = "文件";
   private static ExecutorService 单线程执行器 = Executors.newSingleThreadExecutor();
   
@@ -47,14 +48,11 @@ public class 文件批量处理 {
     }
   }
 
-  public static void main(String[] 参数) throws InterruptedException {
-    String 文件匹配表达式 = "*.html"; //参数[0];
-    String shell命令模板 = "ls -l 文件";//参数[1];
-
+  public void 运行() throws InterruptedException {
     try {
-      List<File> 匹配文件 = 获取匹配文件(文件匹配表达式);
+      List<File> 匹配文件 = 获取匹配文件(取文件匹配表达式());
       for (File 文件 : 匹配文件) {
-        运行命令(shell命令模板, 文件.getAbsolutePath());
+        运行命令(取Shell命令模板(), 文件.getAbsolutePath());
       }
       单线程执行器.shutdown();
     } catch (IOException ex) {
@@ -113,5 +111,21 @@ public class 文件批量处理 {
     单线程执行器.submit(streamGobbler);
     int exitCode = process.waitFor();
     assert exitCode == 0;
+  }
+
+  public String 取文件匹配表达式() {
+    return 文件匹配表达式;
+  }
+
+  public void 置文件匹配表达式(String 文件匹配表达式) {
+    this.文件匹配表达式 = 文件匹配表达式;
+  }
+
+  public String 取Shell命令模板() {
+    return shell命令模板;
+  }
+
+  public void 置Shell命令模板(String shell命令模板) {
+    this.shell命令模板 = shell命令模板;
   }
 }

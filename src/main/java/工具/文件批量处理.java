@@ -59,7 +59,6 @@ public class 文件批量处理 {
           运行命令(命令模板, 文件.getAbsolutePath());
         }
       }
-      单线程执行器.shutdown();
     } catch (IOException ex) {
       Logger.getLogger(文件批量处理.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -137,5 +136,9 @@ public class 文件批量处理 {
 
   public void 置Shell命令模板(String shell命令模板) {
     this.shell命令模板 = shell命令模板;
+  }
+
+  public void 清理() {
+    单线程执行器.shutdown();
   }
 }

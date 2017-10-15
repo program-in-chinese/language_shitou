@@ -14,15 +14,21 @@ public class 石头 {
   private static String 反馈_无法识别 = "不可识别: ";
   
   private static 文件批量处理 文件处理 = new 文件批量处理();
+  private static Scanner 读入 = new Scanner(System.in);
   
   public static void main(String[] args) {
     String 命令 = "";
-    Scanner 读入 = new Scanner(System.in);
     do {
       应对(命令);
       命令 = 读入.nextLine();
     } while (!命令.equals(命令_退出));
+
+    清理();
+  }
+
+  private static void 清理() {
     System.out.println(反馈_退出);
+    文件处理.清理();
     读入.close();
   }
 
@@ -31,6 +37,8 @@ public class 石头 {
       System.out.println(反馈_欢迎);
     } else if (命令.indexOf(命令_找文件) == 0) {
       文件处理.置文件匹配表达式(命令.substring(命令_找文件.length()));
+
+      // TODO: 反馈匹配文件的概要信息, 如个数
     } else if (命令.indexOf(命令_运行) == 0) {
       文件处理.置Shell命令模板(命令.substring(命令_运行.length()));
       try {

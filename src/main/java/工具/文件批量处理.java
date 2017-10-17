@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 public class 文件批量处理 {
 
   private String 文件匹配表达式 = "";
+  private List<File> 选中文件 = new ArrayList<>();
   private String shell命令模板 = "";
 
   private static String 占位符 = "文件";
@@ -54,8 +55,7 @@ public class 文件批量处理 {
       if (!命令模板.contains(占位符)) {
         运行命令(命令模板);
       } else {
-        List<File> 匹配文件 = 获取匹配文件(取文件匹配表达式());
-        for (File 文件 : 匹配文件) {
+        for (File 文件 : 选中文件) {
           运行命令(命令模板, 文件.getAbsolutePath());
         }
       }
@@ -64,12 +64,13 @@ public class 文件批量处理 {
     }
   }
 
-  private static List<File> 获取匹配文件(String 文件匹配表达式) throws IOException {
-    // TODO: 支持无*, 多*, 等等. 考虑调用ls/dir的返回值
+  private static List<File> 获取匹配文件(String 文件匹配表达式) {
+    // TODO: 支持无*, 多*, 按属性(大小,创建/修改时间)过滤等等. 考虑调用ls/dir的返回值
+    // TODO: 支持追加文件, 重置选中文件
     int 匹配符位置 = 文件匹配表达式.indexOf("*");
     String 目录路径 = 文件匹配表达式.substring(0, 匹配符位置 - 1);
     ArrayList<File> 匹配文件 = new ArrayList<>();
-    Path startDir = Paths.get(目录路径); // "/Users/xuanwu/work/bak/"
+    Path startDir = Paths.get(目录路径);
     FileSystem fs = FileSystems.getDefault();
     final PathMatcher matcher = fs.getPathMatcher("glob:" + 文件匹配表达式.substring(匹配符位置));
 
@@ -89,7 +90,12 @@ public class 文件批量处理 {
         return FileVisitResult.CONTINUE;
       }
     };
-    Files.walkFileTree(startDir, matcherVisitor);
+    try {
+      Files.walkFileTree(startDir, matcherVisitor);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     return 匹配文件;
   }
 
@@ -128,6 +134,7 @@ public class 文件批量处理 {
 
   public void 置文件匹配表达式(String 文件匹配表达式) {
     this.文件匹配表达式 = 文件匹配表达式;
+    选中文件 = 获取匹配文件(文件匹配表达式);
   }
 
   public String 取Shell命令模板() {
@@ -136,6 +143,10 @@ public class 文件批量处理 {
 
   public void 置Shell命令模板(String shell命令模板) {
     this.shell命令模板 = shell命令模板;
+  }
+
+  public List<File> 取选中文件() {
+    return 选中文件;
   }
 
   public void 清理() {
